@@ -61,10 +61,9 @@ Each group represents a part of the workflow:
 
 ```
 src/
-├── api/              # API integration and hooks
 ├── components/       # React components
 ├── data/            # JSON configuration files
-├── styles/          # CSS and styling
+├── all the stylesheets #cuz fuck you lol
 └── main.jsx         # Application entry point
 ```
 
