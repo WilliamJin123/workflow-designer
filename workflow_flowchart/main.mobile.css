@@ -1,0 +1,65 @@
+/* On small screens, switch to vertical flex */
+@media (max-width: 640px), (max-height: 640px) {
+  body {
+    padding: 5px;
+  }
+  .legend {
+    flex-direction: column; /* stack items vertically */
+    justify-content: center;
+    align-items: center; /* center items horizontally */
+    gap: 8px; /* smaller gap for vertical layout */
+    width: 60%;
+  }
+
+  .legend-item {
+    flex: none; /* don’t shrink or grow, use natural height */
+    width: 100%; /* stretch to container width */
+    justify-content: center;
+  }
+  .legend-color {
+    margin-right: 3px;
+  }
+
+  .blue-button {
+    font-size: 13px;
+    width: 30%;
+  }
+
+  .cheat-sheet td {
+    font-size: 14px;
+  }
+  .blue-button.absoluteCheatSheet {
+    padding: 4px 8px;
+    width: 40%;
+    font-size: 13.5px;
+    min-height: 50px;
+    right: 0;
+  }
+  #icon-btn {
+    width: 50%;
+  }
+
+  .detail-row,
+  .detail-value ul,
+  .detail-value li {
+    font-size: 14px; /* smaller text */
+  }
+
+  .back-link {
+    position: sticky;
+  }
+}
+
+@media (orientation: portrait) {
+  .detail-section {
+    width: 150dvw;
+  }
+   .container-mermaid {
+    width: 200dvw;
+  }
+ 
+}
+
+@media (orientation: landscape ){
+  
+}

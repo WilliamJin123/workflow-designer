@@ -1,0 +1,186 @@
+:root {
+  /* Functional / Working */
+  --functional-stroke: #588b61;
+  --functional-fill: #042c1e;
+  --functional-text: #36a681;
+  --functional-icon: #36a681;
+  --functional-bg: #1b1f1b;
+
+  /* In Progress */
+  --inprogress-stroke: #8b7758;
+  --inprogress-fill: #3c2b1a;
+  --inprogress-text: #fbbf24;
+  --inprogress-icon: #f59e0b;
+  --inprogress-bg: #1f1e1b;
+
+  /* Not Started */
+  --notstarted-stroke: #8b5858;
+  --notstarted-fill: #3c1919;
+  --notstarted-text: #f87171;
+  --notstarted-icon: #ef4444;
+  --notstarted-bg: #1f1b1b;
+
+  /* General */
+  --subgraph-header: rgb(248, 248, 248);
+  --subgraph-bg: #151515;
+  --subgraph-stroke: #3d3d3d;
+  --edge-label-text: white;
+  --edge-label-bg: var(--subgraph-bg);
+  --arrow-stroke: rgb(125, 125, 125);
+
+  --node-stroke-width: 2px;
+  --icon-stroke-width: 1px;
+  --arrow-stroke-width: 3px;
+  --border-stroke-width: 1px;
+}
+
+/* Subgraph groups header */
+.cluster-label .nodeLabel p {
+  color: var(--subgraph-header) !important;
+  font-weight: 400;
+  font-size: 16px;
+}
+.cluster-label .nodeLabel {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  gap: 3px;
+}
+/*Subgraph rectangle bg */
+.cluster > rect {
+  fill: var(--subgraph-bg) !important;
+  stroke: var(--subgraph-stroke) !important;
+  stroke-width: var(--border-stroke-width);
+}
+
+/* Edge labels */
+.edgeLabel > p {
+  color: var(--edge-label-text) !important;
+  background-color: var(--edge-label-bg) !important;
+  /* stroke: var(--subgraph-stroke) !important;
+  stroke-width: var(--border-stroke-width); */
+}
+
+/* Arrows */
+.edgePaths > * {
+  stroke: var(--arrow-stroke) !important;
+  stroke-width: var(--arrow-stroke-width) !important;
+  transition: stroke 0.3s ease, stroke-width 0.3s ease;
+}
+.edgePaths > *:hover {
+  stroke-width: calc(var(--arrow-stroke-width) * 1.75) !important;
+}
+.edgePaths .edge-pattern-solid{
+  stroke: var(--arrow-stroke) !important;
+}
+.edgePaths .edge-pattern-dotted {
+  stroke: blue!important;
+}
+/* General styles */
+
+.icon-shape > g.label *,
+.icon-shape > g.label {
+  border-radius: 10px;
+}
+/* Icon subtexts */
+.icon-shape > g.label > foreignObject > div > .nodeLabel > p {
+  height: inherit;
+  display: flex;
+  justify-content: center;
+  font-weight: 400;
+  align-items: center;
+}
+
+polygon {
+  stroke-width: var(--node-stroke-width) !important;
+}
+
+.icon-shape .icon-shape2 > path {
+  stroke-width: var(--icon-stroke-width) !important;
+}
+
+.node:hover,
+.icon-shape:hover {
+  filter: brightness(1.05);
+  cursor: pointer;
+  transform: scale(1.03);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+.node,
+.icon-shape {
+  transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+/* Functional / Working nodes */
+.functional polygon,
+.functional.node:not(:has(.icon-shape)) * {
+  stroke: var(--functional-stroke) !important;
+}
+.functional .nodeLabel {
+  color: var(--functional-text) !important;
+}
+/* icon text */
+.icon-shape.functional > g.label > foreignObject > div > .nodeLabel > p {
+  color: var(--functional-text) !important;
+  fill: var(--functional-text) !important;
+  background-color: var(--functional-bg) !important;
+}
+/* icon svg inner */
+.functional.icon-shape > g {
+  color: var(--functional-icon) !important;
+}
+/* icon background svg */
+.functional.icon-shape .icon-shape2 > path {
+  stroke: var(--functional-stroke) !important;
+  fill: var(--functional-fill) !important;
+}
+
+/* In Progress nodes */
+.inProgress polygon,
+.inProgress.node:not(:has(.icon-shape)) * {
+  fill: #1a1a1a !important;
+  stroke: var(--inprogress-stroke) !important;
+}
+.inProgress .nodeLabel {
+  color: var(--inprogress-text) !important;
+}
+/* icon text */
+.icon-shape.inProgress > g.label > foreignObject > div > .nodeLabel > p {
+  color: var(--inprogress-text) !important;
+  fill: var(--inprogress-text) !important;
+  background-color: var(--inprogress-bg) !important;
+}
+/* icon svg inner */
+.inProgress.icon-shape > g {
+  color: var(--inprogress-icon) !important;
+}
+/* icon background svg */
+.inProgress.icon-shape .icon-shape2 > path {
+  stroke: var(--inprogress-stroke) !important;
+  fill: var(--inprogress-fill) !important;
+}
+
+/* Not Started nodes */
+.notStarted polygon,
+.notStarted.node:not(:has(.icon-shape)) * {
+  fill: #1a1a1a !important;
+  stroke: var(--notstarted-stroke) !important;
+}
+.notStarted .nodeLabel {
+  color: var(--notstarted-text) !important;
+}
+/* icon text */
+.icon-shape.notStarted > g.label > foreignObject > div > .nodeLabel > p {
+  color: var(--notstarted-text) !important;
+  fill: var(--notstarted-text) !important;
+  background-color: var(--notstarted-bg) !important;
+}
+/* icon svg inner */
+.notStarted.icon-shape > g {
+  color: var(--notstarted-icon) !important;
+}
+/* icon background svg */
+.notStarted.icon-shape .icon-shape2 > path {
+  stroke: var(--notstarted-stroke) !important;
+  fill: var(--notstarted-fill) !important;
+}
