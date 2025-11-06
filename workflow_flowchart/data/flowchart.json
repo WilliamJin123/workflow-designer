@@ -2,147 +2,156 @@
   "type": "architecture",
   "groups": [
     {
-      "id": "dataPersistence",
-      "label": "Data Persistence",
-      "icon": "fa:fa-folder-blank",
+      "id": "clientLayer",
+      "label": "Client Layer",
+      "icon": "fa:fa-desktop",
       "parent": null,
-      "description": "Central storage for all workflow outputs, including product data, competitor insights, generated copy, AI images/videos, and shop builds. Supports retrieval and downstream processing."
+      "description": "User-facing applications and interfaces for web and mobile platforms."
     },
     {
-      "id": "productIdentification",
-      "label": "Product Identification",
-      "icon": "fa:fa-magnifying-glass",
-      "parent": null
-    },
-    {
-      "id": "productValidation",
-      "label": "Product Validation",
-      "icon": "fa:fa-vial-circle-check",
-      "parent": null
-    },
-    {
-      "id": "productPlanning",
-      "label": "Product / Shop Planning",
-      "icon": "fa:fa-chart-diagram",
+      "id": "apiGateway",
+      "label": "API Gateway & Load Balancing",
+      "icon": "fa:fa-network-wired",
       "parent": null,
-      "direction": "TB"
+      "description": "Entry point for all client requests with load balancing and routing capabilities."
     },
     {
-      "id": "shopBuilding",
-      "label": "Shop Building",
-      "icon": "fa:fa-shop-lock",
-      "parent": null
+      "id": "authLayer",
+      "label": "Authentication & Authorization",
+      "icon": "fa:fa-shield-halved",
+      "parent": null,
+      "description": "Security layer handling user authentication, authorization, and session management."
     },
     {
-      "id": "adGeneration",
-      "label": "Ad Generation",
-      "icon": "fa:fa-bullhorn",
-      "parent": null
+      "id": "applicationLayer",
+      "label": "Application Services",
+      "icon": "fa:fa-server",
+      "parent": null,
+      "description": "Core business logic and API endpoints for the application."
+    },
+    {
+      "id": "dataLayer",
+      "label": "Data Layer",
+      "icon": "fa:fa-database",
+      "parent": null,
+      "description": "Persistent storage including SQL, NoSQL, and caching solutions."
+    },
+    {
+      "id": "messageQueue",
+      "label": "Message Queue & Workers",
+      "icon": "fa:fa-message",
+      "parent": null,
+      "description": "Asynchronous job processing and message queue systems."
+    },
+    {
+      "id": "externalServices",
+      "label": "External Services",
+      "icon": "fa:fa-cloud",
+      "parent": null,
+      "description": "Third-party integrations and external APIs."
     }
   ],
   "groupEdges": [
     {
-      "from": "productIdentification",
-      "to": "productValidation & productPlanning",
-      "label": "Product discovery data from ad and marketplace sources flows into validation and planning pipelines."
+      "from": "clientLayer",
+      "to": "apiGateway",
+      "label": "All client requests route through API gateway for load balancing and authentication."
     },
     {
-      "from": "productValidation",
-      "to": "productPlanning",
-      "label": "Validated product insights are passed into planning for strategic shop setup."
+      "from": "apiGateway",
+      "to": "authLayer",
+      "label": "Gateway validates authentication tokens before forwarding requests."
     },
     {
-      "from": "productPlanning",
-      "to": "shopBuilding & adGeneration",
-      "label": "Planned product data, customer profiles, and competitive insights guide shop creation and ad generation."
+      "from": "authLayer",
+      "to": "applicationLayer",
+      "label": "Authenticated requests are routed to appropriate application services."
     },
     {
-      "from": "shopBuilding",
-      "to": "adGeneration",
-      "label": "Shop assets such as copy and visuals feed into ad generation for cohesive branding."
+      "from": "applicationLayer",
+      "to": "dataLayer & messageQueue",
+      "label": "Services interact with databases for persistence and queue for async processing."
     },
     {
-      "from": "productIdentification & productValidation & productPlanning & shopBuilding & adGeneration",
-      "to": "dataPersistence",
-      "label": "All stages store and retrieve structured outputs: data, assets, models in the central persistence layer."
+      "from": "messageQueue",
+      "to": "externalServices",
+      "label": "Background workers call external APIs for email, payments, and notifications."
+    },
+    {
+      "from": "applicationLayer",
+      "to": "externalServices",
+      "label": "Direct API calls to external services for real-time operations."
     }
   ],
   "services": [
     {
-      "id": "GHKD",
-      "label": "GetHookd Top Performing Product Ads",
-      "group": "productIdentification",
-      "icon": "mdi:advertisements",
-      "status": "inProgress",
-      "role": "api",
-      "shapealias": "subroutine",
-      "description": "Fetches product metadata from GetHookd website including product titles, prices, ratings, reviews, and seller information. Runs the data through a vision model to do a quick check on the product: rejects items that are too large (shipping issues) or require a software app (too complex).",
-      "type": "API Fetcher",
+      "id": "WEBAPP",
+      "label": "React Web Application",
+      "group": "clientLayer",
+      "icon": "simple-icons:react",
+      "status": "functional",
+      "role": "client",
+      "description": "Main web application built with React, TypeScript, and Tailwind CSS. Handles user interactions and communicates with backend via REST APIs.",
+      "type": "Frontend Application",
       "functions": [
         {
-          "name": "GetHookd API",
-          "description": "Fetch all ads data via API",
+          "name": "User Interface Rendering",
+          "description": "Renders dynamic UI components based on user state and API responses.",
           "input": [
             {
-              "name": "GetHookd Parameter Object",
-              "type": "object"
+              "name": "User Input",
+              "type": "object",
+              "description": "User interactions like clicks, form submissions, and navigation."
+            },
+            {
+              "name": "API Responses",
+              "type": "object",
+              "description": "Data received from backend APIs."
             }
           ],
           "output": [
             {
-              "name": "Raw Ad Data",
-              "type": "array",
-              "description": "Raw, unfiltered data from the API."
+              "name": "Rendered UI",
+              "type": "DOM",
+              "description": "Dynamic HTML rendered in the browser."
             }
           ]
         },
         {
-          "name": "Cerebras Validator",
-          "description": "Validates ad data to ensure it is a physical product without a software app, then uses the images to ensure they are physically not too large",
-          "input": [{ "name": "Raw Ad Data", "type": "array" }],
+          "name": "State Management",
+          "description": "Manages application state using React Context and Redux.",
+          "input": [
+            {
+              "name": "State Updates",
+              "type": "object",
+              "description": "Changes to application state from user actions or API calls."
+            }
+          ],
           "output": [
             {
-              "name": "Valid Ad Indices",
-              "type": "array",
-              "description": "The indices of valid ads based on product criteria."
+              "name": "Updated State",
+              "type": "object",
+              "description": "New application state triggering UI re-renders."
             }
           ]
         }
       ],
       "input": [
         {
-          "name": "GetHookd Parameter Object",
-          "description": "Filter products by Gethookd website filters",
+          "name": "User Actions",
+          "description": "User interactions with the web interface.",
           "type": "object",
           "properties": [
             {
-              "name": "performanceRating",
+              "name": "eventType",
               "type": "string",
-              "description": "The minimum performance rating to filter products by (e.g., '5 stars', '4.5 stars').",
-              "example": "5 stars"
+              "example": "click",
+              "description": "Type of user interaction (click, submit, scroll, etc.)."
             },
             {
-              "name": "timeframe",
-              "type": "string",
-              "description": "The time period within which the product data was collected or is relevant (e.g., 'within last month', 'last 6 months').",
-              "example": "within last month"
-            },
-            {
-              "name": "minPrice",
-              "type": "number",
-              "description": "The minimum price (inclusive) of the product to filter by.",
-              "optional": true
-            },
-            {
-              "name": "maxPrice",
-              "type": "number",
-              "description": "The maximum price (inclusive) of the product to filter by.",
-              "optional": true
-            },
-            {
-              "name": "category",
-              "type": "string",
-              "description": "The specific product category to filter (e.g., 'fishing rods', 'lures', 'reels').",
+              "name": "payload",
+              "type": "object",
+              "description": "Data associated with the user action.",
               "optional": true
             }
           ]
@@ -150,1304 +159,743 @@
       ],
       "output": [
         {
-          "name": "Ad metadata",
+          "name": "API Requests",
+          "description": "HTTP requests sent to the backend API.",
           "type": "object",
-          "description": "Ad metadata (description / text)",
           "properties": [
             {
-              "name": "adDescription",
+              "name": "endpoint",
               "type": "string",
-              "description": "A brief, compelling description or summary of the product suitable for an advertisement or search result snippet."
+              "example": "/api/users"
             },
             {
-              "name": "productTitle",
+              "name": "method",
               "type": "string",
-              "description": "The full, official name or title of the product."
+              "example": "GET"
             },
             {
-              "name": "price",
-              "type": "number",
-              "description": "The current price of the product."
-            },
-            {
-              "name": "rating",
-              "type": "number",
-              "description": "The average numerical rating of the product (e.g., 4.5 out of 5)."
-            },
-            {
-              "name": "reviewsCount",
-              "type": "integer",
-              "description": "The total number of customer reviews submitted for the product."
-            },
-            {
-              "name": "imageURL",
-              "type": "string",
-              "description": "The URL link to the main image of the product."
-            },
-            {
-              "name": "associatedShop",
-              "type": "string",
-              "description": "The name of the online store, vendor, or shop where the product is sold."
-            },
-            {
-              "name": "sellerInfo",
+              "name": "headers",
               "type": "object",
               "properties": [
-                { "name": "sellerName", "type": "string" },
-                { "name": "sellerURL", "type": "string" }
+                {
+                  "name": "Authorization",
+                  "type": "string",
+                  "example": "Bearer token123"
+                }
               ]
+            },
+            {
+              "name": "body",
+              "type": "object",
+              "optional": true
             }
           ]
         }
       ]
     },
     {
-      "id": "AMZPF",
-      "label": "Amazon Top Performing Products",
-      "group": "productIdentification",
-      "icon": "ri:amazon-fill",
-      "status": "notStarted",
-      "role": "scraper",
-      "description": "Scrapes Amazon best sellers and trending items to identify top-performing products for potential dropshipping opportunities.",
-      "type": "Web Scraper",
+      "id": "MOBILE",
+      "label": "React Native Mobile App",
+      "group": "clientLayer",
+      "icon": "simple-icons:react",
+      "status": "inProgress",
+      "role": "client",
+      "description": "Cross-platform mobile application for iOS and Android built with React Native.",
+      "type": "Mobile Application",
       "functions": [
         {
-          "name": "Amazon Product API Fetch",
-          "description": "Fetch Products data and a few sample reviews (whatever is convenient with the API) and return the information",
+          "name": "Mobile UI Rendering",
+          "description": "Renders native mobile components based on user state.",
           "input": [
             {
-              "name": "Amazon Parameter Object",
+              "name": "User Input",
               "type": "object"
             }
           ],
           "output": [
             {
-              "name": "Product Information",
-              "type": "object",
-              "description": "The filtered product(s)."
+              "name": "Native Components",
+              "type": "Native UI",
+              "description": "Rendered mobile UI elements."
             }
           ]
         }
       ],
       "input": [
         {
-          "name": "Amazon Parameter Object",
-          "description": "Filters for the Amazon scraping.",
-          "properties": [
-            { "name": "timeframe", "type": "string", "example": "last month" },
-            {
-              "name": "categories",
-              "type": "array",
-              "items": { "type": "string" },
-              "example": ["health / wellness", "pets"]
-            },
-            {
-              "name": "bestSellerRank",
-              "type": "integer",
-              "optional": true,
-              "example": 100
-            }
-          ]
+          "name": "User Actions",
+          "description": "Mobile-specific user interactions like gestures and taps.",
+          "type": "object"
         }
       ],
       "output": [
         {
-          "name": "Products Data",
-          "description": "List of products, with metadata and image gallery URLs. Will parse more details later.",
-          "properties": [
-            { "name": "amazonASIN", "type": "string" },
-            { "name": "productURL", "type": "string" },
-            { "name": "productTitle", "type": "string" },
-            {
-              "name": "imageGalleryURLs",
-              "type": "array",
-              "items": { "type": "string" }
-            },
-            {
-              "name": "rawMetadata",
-              "type": "object",
-              "description": "All scraped data for later detailed parsing."
-            }
-          ]
-        },
-        {
-          "name": "AI Sentiment",
-          "description": "An AI sentiment for how good this product is for ecommerce. Also filters out unviable products (too large, software-related).",
-          "properties": [
-            {
-              "name": "score",
-              "type": "number",
-              "description": "Viability score (0 to 100)."
-            },
-            {
-              "name": "isViable",
-              "type": "boolean",
-              "description": "True if it passes size/complexity checks."
-            },
-            { "name": "reasoning", "type": "string" }
-          ]
+          "name": "API Requests",
+          "description": "HTTP requests to backend services.",
+          "type": "object"
         }
       ]
     },
     {
-      "id": "TRFVAL",
-      "label": "Traffic Data Collection",
-      "group": "productValidation",
-      "icon": "material-symbols-light:add-chart-outline-rounded",
-      "status": "inProgress",
-      "role": "scraper",
-      "description": "Searches the web for a specific product (text + image similarity search) in order to find competitors. Uses Similarweb (for now) and meta ad insights to return traffic",
-      "type": "Web Scraper",
+      "id": "NGINX",
+      "label": "NGINX Load Balancer",
+      "group": "apiGateway",
+      "icon": "simple-icons:nginx",
+      "status": "functional",
+      "role": "loadBalancer",
+      "description": "NGINX load balancer distributing traffic across multiple application server instances with health checks and SSL termination.",
+      "type": "Load Balancer",
       "functions": [
         {
-          "name": "Google Lens Search (API?)",
-          "description": "Does a google search with the product text description and image similarity",
+          "name": "Load Distribution",
+          "description": "Distributes incoming requests across healthy backend servers using round-robin algorithm.",
           "input": [
             {
-              "name": "Search Prompt",
-              "type": "string"
-            },
-            {
-              "name": "Image Prompt(s)",
-              "type": "array",
-              "description": "Zero or more images to search along with text"
+              "name": "HTTP Request",
+              "type": "object",
+              "description": "Incoming client request."
             }
           ],
           "output": [
             {
-              "name": "List of Competitor Shop Sites",
-              "type": "array",
-              "description": "All the competitor site URLs."
+              "name": "Forwarded Request",
+              "type": "object",
+              "description": "Request routed to a healthy backend server."
             }
           ]
         },
         {
-          "name": "SimilarWeb Competitor Insights",
-          "description": "Fetches analytics data (traffic, engagement, ranking) for competitor sites using SimilarWeb or equivalent API.",
+          "name": "Health Checks",
+          "description": "Monitors backend server health and removes unhealthy instances from rotation.",
           "input": [
             {
-              "name": "Competitor Site URLs",
+              "name": "Server Pool",
               "type": "array",
-              "description": "List of competitor website URLs."
+              "description": "List of backend servers to monitor."
             }
           ],
           "output": [
             {
-              "name": "Traffic & Engagement Data",
+              "name": "Healthy Servers",
               "type": "array",
-              "description": "Key metrics per site (visits, bounce rate, top countries, rank, etc.)."
-            }
-          ]
-        },
-        {
-          "name": "Meta Ads Library Search",
-          "description": "Searches Meta Ads Library for active or historical ads from the provided competitor domains or brand names.",
-          "input": [
-            {
-              "name": "Competitor Site URLs",
-              "type": "array",
-              "description": "List of competitor websites or brand domains to look up in Meta Ads Library."
-            }
-          ],
-          "output": [
-            {
-              "name": "Ad Campaign Data",
-              "type": "array",
-              "description": "List of ads, including titles, creatives, engagement, and run dates."
+              "description": "List of servers passing health checks."
             }
           ]
         }
       ],
       "input": [
         {
-          "name": "Product Information",
-          "description": "The product details to search for traffic and competitor analysis.",
-          "properties": [
-            {
-              "name": "productTitle",
-              "type": "string",
-              "example": "Ergonomic Standing Desk Converter"
-            },
-            {
-              "name": "productDescription",
-              "type": "string",
-              "example": "Adjustable standing desk riser for dual monitors and laptops."
-            },
-            {
-              "name": "productImages",
-              "type": "array",
-              "items": { "type": "string" },
-              "example": "[https://example.com/desk1.jpg, https://example.com/desk2.jpg]"
-            }
-          ]
-        }
-      ],
-      "output": [
-        {
-          "name": "Competitor Analytics",
-          "description": "Combined dataset of competitor sites, their traffic insights, and active ads.",
-          "properties": [
-            {
-              "name": "siteURL",
-              "type": "string",
-              "description": "Competitor website URL."
-            },
-            {
-              "name": "traffic",
-              "type": "object",
-              "description": "Traffic analytics data such as visits, bounce rate, and global rank."
-            },
-            {
-              "name": "ads",
-              "type": "array",
-              "description": "Meta Ads high-level data associated with the competitor site."
-            }
-          ]
-        },
-        {
-          "name": "Aggregated Data",
-          "description": "Aggregated overview of all competitor traffic and ad performance metrics for this product.",
-          "properties": [
-            {
-              "name": "totalCompetitors",
-              "type": "integer",
-              "description": "Number of competitor sites found."
-            },
-            {
-              "name": "averageTraffic",
-              "type": "number",
-              "description": "Average monthly visits across all competitor sites."
-            },
-            {
-              "name": "topAdPlatforms",
-              "type": "array",
-              "description": "Most common ad platforms used by competitors."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "AIVAL",
-      "label": "AI Product Viability Classifier",
-      "group": "productValidation",
-      "icon": "material-symbols-light:psychology-outline-rounded",
-      "status": "inProgress",
-      "role": "analyzer",
-      "description": "Uses AI to assess whether a product is viable for e-commerce based on traffic, competition, and ad data.",
-      "type": "AI Model",
-      "functions": [
-        {
-          "name": "AI Viability Evaluation",
-          "description": "Analyzes product attributes and competitor data using an AI model to predict commercial viability.",
-          "input": [
-            {
-              "name": "Product Data",
-              "type": "object",
-              "description": "Details about the product including description, category, and images."
-            },
-            {
-              "name": "Competitor Analytics",
-              "type": "array",
-              "description": "Traffic, ranking, and ad data collected from the previous Traffic Data Collection node."
-            }
-          ],
-          "output": [
-            {
-              "name": "Viability Report",
-              "type": "object",
-              "description": "AI-generated evaluation including scores, reasoning, and category analysis."
-            }
-          ]
-        },
-        {
-          "name": "Category & Market Fit Classification",
-          "description": "Classifies the product into a high-level market category and assesses how well it fits current trends.",
-          "input": [
-            {
-              "name": "Product Description",
-              "type": "string",
-              "description": "Text description of the product."
-            }
-          ],
-          "output": [
-            {
-              "name": "Market Fit",
-              "type": "object",
-              "description": "Predicted category, target demographic, and relevance to current demand."
-            }
-          ]
-        }
-      ],
-      "input": [
-        {
-          "name": "Product & Market Data",
-          "description": "Combined product details and competitor insights from previous nodes.",
-          "properties": [
-            {
-              "name": "productTitle",
-              "type": "string"
-            },
-            {
-              "name": "productDescription",
-              "type": "string"
-            },
-            {
-              "name": "productImages",
-              "type": "array",
-              "items": { "type": "string" }
-            },
-            {
-              "name": "competitorAnalytics",
-              "type": "array",
-              "description": "Traffic and ad data collected for similar products."
-            }
-          ]
-        }
-      ],
-      "output": [
-        {
-          "name": "AI Viability Decision",
-          "description": "Final classification of whether the product is viable or not.",
-          "properties": [
-            {
-              "name": "viabilityScore",
-              "type": "number",
-              "description": "Predicted viability score (0–100)."
-            },
-            {
-              "name": "isViable",
-              "type": "boolean",
-              "description": "True if product is considered viable for e-commerce."
-            },
-            {
-              "name": "confidence",
-              "type": "number",
-              "description": "Model confidence level (0–1)."
-            },
-            {
-              "name": "reasoning",
-              "type": "string",
-              "description": "Short explanation of why the product was or wasn't considered viable."
-            },
-            {
-              "name": "recommendedCategory",
-              "type": "string",
-              "description": "Best-fit category for the product."
-            },
-            {
-              "name": "marketFitScore",
-              "type": "number",
-              "description": "How well the product aligns with market demand (0–100)."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "COMPDATA",
-      "label": "Competitor Product Data Fetch",
-      "group": "productPlanning",
-      "icon": "material-symbols-light:cloud-download-outline",
-      "status": "notStarted",
-      "role": "scraper",
-      "description": "Fetches relevant product information from competitor websites, including product copy, prices, and images, for market analysis and shop-building preparation.",
-      "type": "Web Scraper",
-      "functions": [
-        {
-          "name": "Competitor Product Scraper",
-          "description": "Scrapes competitor product pages for descriptions, prices, and media assets.",
-          "input": [
-            {
-              "name": "Competitor URLs",
-              "type": "array",
-              "description": "List of competitor product page URLs to scrape."
-            }
-          ],
-          "output": [
-            {
-              "name": "Product Copy",
-              "type": "array",
-              "description": "Text content describing the product from competitor pages."
-            },
-            {
-              "name": "Product Prices",
-              "type": "array",
-              "description": "Current pricing information for each product."
-            },
-            {
-              "name": "Product Images",
-              "type": "array",
-              "description": "URLs of product images collected from competitor sites."
-            }
-          ]
-        }
-      ],
-      "input": [
-        {
-          "name": "Competitor Product List",
-          "description": "A list of competitor product URLs or identifiers to fetch data from.",
-          "type": "array",
-          "items": { "type": "string" }
-        }
-      ],
-      "output": [
-        {
-          "name": "Competitor Product Data",
-          "description": "Aggregated dataset of competitor product copy, pricing, and images for shop-building and market analysis.",
+          "name": "Client Requests",
+          "description": "All incoming HTTP/HTTPS requests from clients.",
+          "type": "object",
           "properties": [
             {
               "name": "url",
-              "type": "string",
-              "description": "The source URL of the competitor product."
+              "type": "string"
             },
             {
-              "name": "copy",
-              "type": "string",
-              "description": "The textual description of the product."
+              "name": "method",
+              "type": "string"
             },
             {
-              "name": "price",
-              "type": "number",
-              "description": "The price of the competitor product."
+              "name": "headers",
+              "type": "object"
             },
             {
-              "name": "images",
-              "type": "array",
-              "items": { "type": "string" },
-              "description": "URLs of the product images."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "AMZREV",
-      "label": "Amazon Review Fetcher",
-      "group": "productPlanning",
-      "icon": "material-symbols-light:map-pin-review-outline",
-      "status": "notStarted",
-      "role": "scraper",
-      "description": "Fetches reviews, ratings, and customer feedback for Amazon products to analyze sentiment, features, and common pain points.",
-      "type": "Web Scraper",
-      "functions": [
-        {
-          "name": "Amazon Review Scraper",
-          "description": "Collects reviews, ratings, and metadata from specified Amazon product pages or ASINs.",
-          "input": [
-            {
-              "name": "Amazon Product Identifiers",
-              "type": "array",
-              "description": "List of Amazon ASINs or product URLs to fetch reviews for."
-            },
-            {
-              "name": "Review Parameters",
+              "name": "body",
               "type": "object",
-              "description": "Filters for reviews such as timeframe, minimum rating, or number of reviews to fetch.",
-              "properties": [
-                {
-                  "name": "timeframe",
-                  "type": "string",
-                  "example": "last 6 months"
-                },
-                { "name": "minRating", "type": "number", "example": 4 },
-                { "name": "maxReviews", "type": "integer", "example": 50 }
-              ]
-            }
-          ],
-          "output": [
-            {
-              "name": "Amazon Reviews",
-              "type": "array",
-              "description": "Collected reviews for each product.",
-              "properties": [
-                {
-                  "name": "asin",
-                  "type": "string",
-                  "description": "The ASIN of the product."
-                },
-                {
-                  "name": "reviewerName",
-                  "type": "string",
-                  "description": "Name of the reviewer."
-                },
-                {
-                  "name": "rating",
-                  "type": "number",
-                  "description": "Rating given by the reviewer (1-5)."
-                },
-                {
-                  "name": "reviewTitle",
-                  "type": "string",
-                  "description": "Title of the review."
-                },
-                {
-                  "name": "reviewBody",
-                  "type": "string",
-                  "description": "Full text of the review."
-                },
-                {
-                  "name": "reviewDate",
-                  "type": "string",
-                  "description": "Date the review was posted."
-                },
-                {
-                  "name": "helpfulVotes",
-                  "type": "integer",
-                  "description": "Number of helpful votes the review received."
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "input": [
-        {
-          "name": "Products to Analyze",
-          "description": "Amazon products to fetch reviews for.",
-          "type": "array",
-          "items": { "type": "string" }
-        }
-      ],
-      "output": [
-        {
-          "name": "Review Data",
-          "description": "Aggregated reviews, ratings, and insights for the given products.",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": [
-              { "name": "asin", "type": "string" },
-              { "name": "reviewerName", "type": "string" },
-              { "name": "rating", "type": "number" },
-              { "name": "reviewTitle", "type": "string" },
-              { "name": "reviewBody", "type": "string" },
-              { "name": "reviewDate", "type": "string" },
-              { "name": "helpfulVotes", "type": "integer" }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "id": "ALBSUP",
-      "label": "Alibaba Product Supply Fetcher",
-      "group": "productPlanning",
-      "icon": "material-symbols-light:warehouse-outline-rounded",
-      "status": "notStarted",
-      "role": "scraper",
-      "description": "Fetches product supply data from Alibaba, including supplier info, pricing, and images for sourcing and cost analysis.",
-      "type": "Web Scraper",
-      "functions": [
-        {
-          "name": "Alibaba Supplier Scraper",
-          "description": "Collects product listings from Alibaba, including supplier details, prices, and images for potential sourcing.",
-          "input": [
-            {
-              "name": "Product Keywords",
-              "type": "string",
-              "description": "Search keywords or product name to find suppliers on Alibaba."
-            },
-            {
-              "name": "Search Parameters",
-              "type": "object",
-              "description": "Optional filters such as minimum order quantity, supplier location, or certifications.",
-              "properties": [
-                {
-                  "name": "minOrderQuantity",
-                  "type": "integer",
-                  "optional": true
-                },
-                {
-                  "name": "supplierCountry",
-                  "type": "string",
-                  "optional": true
-                },
-                {
-                  "name": "certifications",
-                  "type": "array",
-                  "items": { "type": "string" },
-                  "optional": true
-                }
-              ]
-            }
-          ],
-          "output": [
-            {
-              "name": "Supplier Listings",
-              "type": "array",
-              "description": "Aggregated product listings from Alibaba.",
-              "properties": [
-                {
-                  "name": "productName",
-                  "type": "string",
-                  "description": "Name of the product listed by the supplier."
-                },
-                {
-                  "name": "supplierName",
-                  "type": "string",
-                  "description": "Supplier or company name."
-                },
-                {
-                  "name": "pricePerUnit",
-                  "type": "number",
-                  "description": "Price per unit of the product."
-                },
-                {
-                  "name": "minOrderQuantity",
-                  "type": "integer",
-                  "description": "Minimum order quantity required by the supplier."
-                },
-                {
-                  "name": "productImages",
-                  "type": "array",
-                  "items": { "type": "string" },
-                  "description": "URLs of product images."
-                },
-                {
-                  "name": "supplierURL",
-                  "type": "string",
-                  "description": "Link to supplier or product page on Alibaba."
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "input": [
-        {
-          "name": "Product Search Data",
-          "description": "Keywords and optional filters for fetching supplier info.",
-          "type": "object",
-          "properties": [
-            {
-              "name": "keywords",
-              "type": "string",
-              "example": "wireless earbuds"
-            },
-            {
-              "name": "minOrderQuantity",
-              "type": "integer",
-              "optional": true,
-              "example": 50
-            },
-            {
-              "name": "supplierCountry",
-              "type": "string",
-              "optional": true,
-              "example": "China"
-            },
-            {
-              "name": "certifications",
-              "type": "array",
-              "items": { "type": "string" },
-              "optional": true,
-              "example": ["CE", "RoHS"]
+              "optional": true
             }
           ]
         }
       ],
       "output": [
         {
-          "name": "Alibaba Product Supply Data",
-          "description": "Aggregated supplier and product information for sourcing decisions.",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": [
-              { "name": "productName", "type": "string" },
-              { "name": "supplierName", "type": "string" },
-              { "name": "pricePerUnit", "type": "number" },
-              { "name": "minOrderQuantity", "type": "integer" },
-              {
-                "name": "productImages",
-                "type": "array",
-                "items": { "type": "string" }
-              },
-              { "name": "supplierURL", "type": "string" }
-            ]
-          }
+          "name": "Routed Requests",
+          "description": "Requests forwarded to backend application servers.",
+          "type": "object"
         }
       ]
     },
     {
-      "id": "CUSTPROF",
-      "label": "Customer Profile Generator",
-      "group": "productPlanning",
-      "icon": "material-symbols-light:switch-account-outline",
-      "status": "notStarted",
-      "role": "analyzer",
-      "description": "Generates demographics, customer personas, and target audience profiles based on product data, competitor analysis, and reviews.",
-      "type": "AI Model",
+      "id": "APIGATE",
+      "label": "API Gateway",
+      "group": "apiGateway",
+      "icon": "material-symbols-light:api",
+      "status": "functional",
+      "role": "api",
+      "description": "Central API gateway handling request routing, rate limiting, and API versioning.",
+      "type": "API Gateway",
       "functions": [
         {
-          "name": "Demographics & Persona Generator",
-          "description": "Analyzes product info, reviews, and competitor data to produce customer segments, personas, and targeting insights.",
+          "name": "Request Routing",
+          "description": "Routes requests to appropriate microservices based on path and method.",
           "input": [
             {
-              "name": "Product Details",
-              "type": "object",
-              "description": "Product metadata including description, category, and images."
-            },
-            {
-              "name": "Competitor Product Data",
-              "type": "array",
-              "description": "Copy, prices, and images fetched from competitor products."
-            },
-            {
-              "name": "Amazon Reviews",
-              "type": "array",
-              "description": "Customer reviews and ratings from Amazon or other marketplaces."
+              "name": "HTTP Request",
+              "type": "object"
             }
           ],
           "output": [
             {
-              "name": "Customer Profiles",
-              "type": "array",
-              "description": "Generated customer segments and personas for targeting.",
+              "name": "Service Request",
+              "type": "object",
+              "description": "Request forwarded to the correct microservice."
+            }
+          ]
+        },
+        {
+          "name": "Rate Limiting",
+          "description": "Enforces API rate limits per client to prevent abuse.",
+          "input": [
+            {
+              "name": "Client Identifier",
+              "type": "string"
+            }
+          ],
+          "output": [
+            {
+              "name": "Rate Limit Status",
+              "type": "object",
+              "description": "Current rate limit usage and remaining quota."
+            }
+          ]
+        }
+      ],
+      "input": [
+        {
+          "name": "API Requests",
+          "description": "HTTP requests from the load balancer.",
+          "type": "object"
+        }
+      ],
+      "output": [
+        {
+          "name": "Service Requests",
+          "description": "Requests routed to backend services.",
+          "type": "object"
+        }
+      ]
+    },
+    {
+      "id": "AUTHSVC",
+      "label": "Authentication Service",
+      "group": "authLayer",
+      "icon": "material-symbols-light:lock-outline",
+      "status": "functional",
+      "role": "service",
+      "description": "Handles user authentication using JWT tokens, OAuth2, and session management.",
+      "type": "Microservice",
+      "functions": [
+        {
+          "name": "User Login",
+          "description": "Authenticates user credentials and issues JWT tokens.",
+          "input": [
+            {
+              "name": "Credentials",
+              "type": "object",
+              "description": "Username/email and password."
+            }
+          ],
+          "output": [
+            {
+              "name": "JWT Token",
+              "type": "string",
+              "description": "Signed JWT token for authenticated sessions."
+            }
+          ]
+        },
+        {
+          "name": "Token Validation",
+          "description": "Validates JWT tokens and returns user identity.",
+          "input": [
+            {
+              "name": "JWT Token",
+              "type": "string"
+            }
+          ],
+          "output": [
+            {
+              "name": "User Identity",
+              "type": "object",
+              "description": "User ID and permissions extracted from token."
+            }
+          ]
+        }
+      ],
+      "input": [
+        {
+          "name": "Authentication Request",
+          "description": "User login credentials or token validation request.",
+          "type": "object",
+          "properties": [
+            {
+              "name": "email",
+              "type": "string",
+              "example": "user@example.com"
+            },
+            {
+              "name": "password",
+              "type": "string",
+              "example": "securePassword123"
+            }
+          ]
+        }
+      ],
+      "output": [
+        {
+          "name": "Authentication Response",
+          "description": "JWT token and user information upon successful authentication.",
+          "type": "object",
+          "properties": [
+            {
+              "name": "token",
+              "type": "string",
+              "description": "JWT access token."
+            },
+            {
+              "name": "refreshToken",
+              "type": "string",
+              "description": "Refresh token for obtaining new access tokens."
+            },
+            {
+              "name": "user",
+              "type": "object",
               "properties": [
                 {
-                  "name": "segmentName",
-                  "type": "string",
-                  "description": "Name of the customer segment."
+                  "name": "id",
+                  "type": "string"
                 },
                 {
-                  "name": "ageRange",
-                  "type": "string",
-                  "description": "Predicted age range for this segment."
+                  "name": "email",
+                  "type": "string"
                 },
                 {
-                  "name": "gender",
-                  "type": "string",
-                  "description": "Gender distribution for this segment."
-                },
-                {
-                  "name": "location",
-                  "type": "string",
-                  "description": "Predominant geographic region."
-                },
-                {
-                  "name": "interests",
+                  "name": "roles",
                   "type": "array",
-                  "items": { "type": "string" },
-                  "description": "Common interests or hobbies."
-                },
-                {
-                  "name": "purchaseBehavior",
-                  "type": "string",
-                  "description": "Predicted buying behavior or preferences."
-                },
-                {
-                  "name": "personaDescription",
-                  "type": "string",
-                  "description": "Narrative description summarizing this customer persona."
+                  "items": {
+                    "type": "string"
+                  }
                 }
               ]
             }
           ]
         }
-      ],
-      "input": [
-        {
-          "name": "Enriched Product Data",
-          "description": "Product, competitor, and review data to generate customer profiles from.",
-          "type": "object",
-          "properties": [
-            { "name": "productTitle", "type": "string" },
-            { "name": "productDescription", "type": "string" },
-            {
-              "name": "productImages",
-              "type": "array",
-              "items": { "type": "string" }
-            },
-            { "name": "competitorProductData", "type": "array" },
-            { "name": "amazonReviews", "type": "array" }
-          ]
-        }
-      ],
-      "output": [
-        {
-          "name": "Customer Demographics & Personas",
-          "description": "AI-generated segments, profiles, and targeting insights for the product.",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": [
-              { "name": "segmentName", "type": "string" },
-              { "name": "ageRange", "type": "string" },
-              { "name": "gender", "type": "string" },
-              { "name": "location", "type": "string" },
-              {
-                "name": "interests",
-                "type": "array",
-                "items": { "type": "string" }
-              },
-              { "name": "purchaseBehavior", "type": "string" },
-              { "name": "personaDescription", "type": "string" }
-            ]
-          }
-        }
       ]
     },
     {
-      "id": "COPYGEN",
-      "label": "Copy Generator",
-      "group": "shopBuilding",
-      "icon": "material-symbols-light:contract-edit-outline-rounded",
-      "status": "notStarted",
-      "role": "generator",
-      "description": "Generates product and shop copy tailored to the target audience based on enriched product and customer profile data.",
-      "type": "AI Model",
+      "id": "USERSVC",
+      "label": "User Service",
+      "group": "applicationLayer",
+      "icon": "material-symbols-light:person-outline",
+      "status": "functional",
+      "role": "service",
+      "description": "Manages user profiles, preferences, and account settings.",
+      "type": "Microservice",
       "functions": [
         {
-          "name": "AI Copy Generation",
-          "description": "Uses product metadata, competitor insights, reviews, supplier info, and customer profiles to create persuasive product and shop copy.",
+          "name": "Get User Profile",
+          "description": "Retrieves user profile information by user ID.",
           "input": [
             {
-              "name": "Product Details",
-              "type": "object",
-              "description": "All relevant product metadata including title, description, and images."
-            },
-            {
-              "name": "Competitor Product Data",
-              "type": "array",
-              "description": "Copy, prices, and images from competitor products."
-            },
-            {
-              "name": "Amazon Reviews",
-              "type": "array",
-              "description": "Customer reviews, ratings, and sentiment analysis."
-            },
-            {
-              "name": "Alibaba Supplier Data",
-              "type": "array",
-              "description": "Supplier info, pricing, and product images."
-            },
-            {
-              "name": "Customer Profiles",
-              "type": "array",
-              "description": "Demographics, personas, and target audience data."
+              "name": "User ID",
+              "type": "string"
             }
           ],
           "output": [
             {
-              "name": "Generated Shop Copy",
+              "name": "User Profile",
               "type": "object",
-              "description": "AI-generated copy for product listings, product descriptions, and shop pages.",
-              "properties": [
-                {
-                  "name": "productTitle",
-                  "type": "string",
-                  "description": "Optimized product title for the shop."
-                },
-                {
-                  "name": "productDescription",
-                  "type": "string",
-                  "description": "Persuasive, SEO-friendly product description."
-                },
-                {
-                  "name": "adCopySnippets",
-                  "type": "array",
-                  "items": { "type": "string" },
-                  "description": "Short copy snippets for ads and social media."
-                },
-                {
-                  "name": "shopPageCopy",
-                  "type": "string",
-                  "description": "Overview copy for the product or shop page."
-                },
-                {
-                  "name": "keywords",
-                  "type": "array",
-                  "items": { "type": "string" },
-                  "description": "SEO and target audience keywords extracted from profiles and reviews."
-                }
-              ]
+              "description": "Complete user profile data."
             }
           ]
-        }
-      ],
-      "input": [
+        },
         {
-          "name": "Enriched Product & Audience Data",
-          "description": "All outputs from productPlanning nodes: product data, competitor data, reviews, supplier info, and customer profiles.",
-          "type": "object",
-          "properties": [
-            { "name": "productData", "type": "object" },
-            { "name": "competitorData", "type": "array" },
-            { "name": "reviews", "type": "array" },
-            { "name": "supplierData", "type": "array" },
-            { "name": "customerProfiles", "type": "array" }
-          ]
-        }
-      ],
-      "output": [
-        {
-          "name": "Shop Copy Output",
-          "description": "Generated copy for products and shop pages.",
-          "type": "object",
-          "properties": [
-            { "name": "productTitle", "type": "string" },
-            { "name": "productDescription", "type": "string" },
-            {
-              "name": "adCopySnippets",
-              "type": "array",
-              "items": { "type": "string" }
-            },
-            { "name": "shopPageCopy", "type": "string" },
-            {
-              "name": "keywords",
-              "type": "array",
-              "items": { "type": "string" }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "IMGGEN",
-      "label": "AI Image / Video Generator",
-      "group": "shopBuilding",
-      "icon": "material-symbols-light:add-photo-alternate-outline-rounded",
-      "status": "notStarted",
-      "role": "generator",
-      "description": "Generates high-quality product and marketing images using AI based on reference images, product data, and customer profiles. Uses Sora 2 for image generation.",
-      "type": "AI Model",
-      "functions": [
-        {
-          "name": "Sora 2 Image Generation",
-          "description": "Generates images based on input reference images, product details, and customer personas.",
+          "name": "Update User Profile",
+          "description": "Updates user profile fields.",
           "input": [
             {
-              "name": "Reference Images",
-              "type": "array",
-              "description": "Images to guide the AI generation process (e.g., competitor images, product variants).",
-              "items": { "type": "string" }
+              "name": "User ID",
+              "type": "string"
             },
             {
-              "name": "Product Details",
-              "type": "object",
-              "description": "Product metadata including title, description, and key features."
-            },
-            {
-              "name": "Customer Profiles",
-              "type": "array",
-              "description": "Target audience demographics and personas for style and design guidance."
+              "name": "Profile Updates",
+              "type": "object"
             }
           ],
           "output": [
             {
-              "name": "Generated Images",
-              "type": "array",
-              "description": "AI-generated images for product listings, marketing, and shop presentation.",
-              "items": {
-                "type": "string",
-                "description": "URL or base64-encoded image."
-              }
+              "name": "Updated Profile",
+              "type": "object"
             }
           ]
         }
       ],
       "input": [
         {
-          "name": "Image Generation Data",
-          "description": "Reference images, product data, and customer profiles for AI image generation.",
+          "name": "User Request",
+          "description": "Request to fetch or update user data.",
           "type": "object",
           "properties": [
             {
-              "name": "referenceImages",
-              "type": "array",
-              "items": { "type": "string" }
+              "name": "userId",
+              "type": "string"
             },
-            { "name": "productData", "type": "object" },
-            { "name": "customerProfiles", "type": "array" }
+            {
+              "name": "operation",
+              "type": "string",
+              "example": "get"
+            }
           ]
         }
       ],
       "output": [
         {
-          "name": "AI Generated Product & Marketing Images",
-          "description": "High-quality images generated by Sora 2 for shop and advertising purposes.",
-          "type": "array",
-          "items": { "type": "string" }
+          "name": "User Data",
+          "description": "User profile information.",
+          "type": "object",
+          "properties": [
+            {
+              "name": "id",
+              "type": "string"
+            },
+            {
+              "name": "email",
+              "type": "string"
+            },
+            {
+              "name": "firstName",
+              "type": "string"
+            },
+            {
+              "name": "lastName",
+              "type": "string"
+            },
+            {
+              "name": "createdAt",
+              "type": "string"
+            }
+          ]
         }
       ]
     },
     {
-      "id": "THEMEBLD",
-      "label": "AI Shop Theme Builder",
-      "group": "shopBuilding",
-      "icon": "material-symbols-light:draw-outline-rounded",
+      "id": "CONTENTSVC",
+      "label": "Content Service",
+      "group": "applicationLayer",
+      "icon": "material-symbols-light:article-outline",
+      "status": "functional",
+      "role": "service",
+      "description": "Manages application content including posts, comments, and media uploads.",
+      "type": "Microservice",
+      "functions": [
+        {
+          "name": "Create Content",
+          "description": "Creates new content items with metadata and associations.",
+          "input": [
+            {
+              "name": "Content Data",
+              "type": "object"
+            }
+          ],
+          "output": [
+            {
+              "name": "Created Content",
+              "type": "object",
+              "description": "Newly created content with ID and timestamps."
+            }
+          ]
+        },
+        {
+          "name": "Search Content",
+          "description": "Full-text search across content with filters.",
+          "input": [
+            {
+              "name": "Search Query",
+              "type": "string"
+            },
+            {
+              "name": "Filters",
+              "type": "object"
+            }
+          ],
+          "output": [
+            {
+              "name": "Search Results",
+              "type": "array",
+              "description": "Paginated list of matching content items."
+            }
+          ]
+        }
+      ],
+      "input": [
+        {
+          "name": "Content Request",
+          "description": "Request to create, update, or fetch content.",
+          "type": "object"
+        }
+      ],
+      "output": [
+        {
+          "name": "Content Response",
+          "description": "Content data or operation result.",
+          "type": "object"
+        }
+      ]
+    },
+    {
+      "id": "NOTIFYSVC",
+      "label": "Notification Service",
+      "group": "applicationLayer",
+      "icon": "material-symbols-light:notifications-outline",
       "status": "inProgress",
-      "role": "generator",
-      "description": "Generates a fully functional Shopify theme or React-based e-commerce project using the AI-generated product copy and images.",
-      "type": "AI Model / Code Generator",
+      "role": "service",
+      "description": "Handles real-time notifications via WebSockets, push notifications, and email alerts.",
+      "type": "Microservice",
       "functions": [
         {
-          "name": "Shopify / React Theme Generation",
-          "description": "Builds a ready-to-deploy Shopify theme or React project, incorporating generated product copy and images.",
+          "name": "Send Notification",
+          "description": "Sends notifications through configured channels.",
           "input": [
             {
-              "name": "Generated Shop Copy",
-              "type": "object",
-              "description": "Product and shop copy from the Shop Copy Generator node.",
-              "properties": [
-                { "name": "productTitle", "type": "string" },
-                { "name": "productDescription", "type": "string" },
-                {
-                  "name": "adCopySnippets",
-                  "type": "array",
-                  "items": { "type": "string" }
-                },
-                { "name": "shopPageCopy", "type": "string" },
-                {
-                  "name": "keywords",
-                  "type": "array",
-                  "items": { "type": "string" }
-                }
-              ]
-            },
-            {
-              "name": "AI Generated Images",
-              "type": "array",
-              "description": "Images generated by the AI Image Generator for product listings and shop pages.",
-              "items": { "type": "string" }
+              "name": "Notification Data",
+              "type": "object"
             }
           ],
           "output": [
             {
-              "name": "Shop Project Files",
+              "name": "Delivery Status",
               "type": "object",
-              "description": "Ready-to-deploy project files for Shopify or React e-commerce site.",
-              "properties": [
-                {
-                  "name": "liquidFiles",
-                  "type": "array",
-                  "items": { "type": "string" },
-                  "description": "Shopify Liquid templates and assets."
-                },
-                {
-                  "name": "reactFiles",
-                  "type": "array",
-                  "items": { "type": "string" },
-                  "description": "React components, pages, and assets if using React version."
-                },
-                {
-                  "name": "staticAssets",
-                  "type": "array",
-                  "items": { "type": "string" },
-                  "description": "Generated images, icons, and other media."
-                },
-                {
-                  "name": "metadata",
-                  "type": "object",
-                  "description": "Project metadata including file structure, dependencies, and environment info."
-                }
-              ]
+              "description": "Status of notification delivery across channels."
             }
           ]
         }
       ],
       "input": [
         {
-          "name": "Shop Build Data",
-          "description": "Inputs from previous shopBuilding nodes including generated copy and AI images.",
-          "type": "object",
-          "properties": [
-            { "name": "shopCopy", "type": "object" },
-            {
-              "name": "generatedImages",
-              "type": "array",
-              "items": { "type": "string" }
-            }
-          ]
-        }
-      ],
-      "output": [
-        {
-          "name": "Completed Shop Project",
-          "description": "Ready-to-deploy Shopify or React e-commerce project including templates, components, and assets.",
+          "name": "Notification Request",
+          "description": "Request to send notifications to users.",
           "type": "object",
           "properties": [
             {
-              "name": "liquidFiles",
-              "type": "array",
-              "items": { "type": "string" }
+              "name": "userId",
+              "type": "string"
             },
             {
-              "name": "reactFiles",
-              "type": "array",
-              "items": { "type": "string" }
+              "name": "message",
+              "type": "string"
             },
             {
-              "name": "staticAssets",
+              "name": "channels",
               "type": "array",
-              "items": { "type": "string" }
-            },
-            { "name": "metadata", "type": "object" }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "ADIMG",
-      "label": "AI Ad Image Generator",
-      "group": "adGeneration",
-      "icon": "material-symbols-light:cameraswitch-outline-rounded",
-      "status": "notStarted",
-      "role": "generator",
-      "description": "Generates AI-driven ad images using customer profiles, reference images, reviews, and store context for maximum ad relevance.",
-      "type": "AI Model",
-      "functions": [
-        {
-          "name": "Ad Image Generation",
-          "description": "Creates high-quality ad images for social media and online campaigns.",
-          "input": [
-            {
-              "name": "Customer Profiles",
-              "type": "array",
-              "description": "Target audience demographics and personas."
-            },
-            {
-              "name": "Reference Images",
-              "type": "array",
-              "description": "Product or competitor images to guide AI generation.",
-              "items": { "type": "string" }
-            },
-            {
-              "name": "Reviews",
-              "type": "array",
-              "description": "Customer reviews for insight into product highlights."
-            },
-            {
-              "name": "Store Context",
-              "type": "object",
-              "description": "Shop copy, product descriptions, and brand context from the theme builder."
-            }
-          ],
-          "output": [
-            {
-              "name": "Generated Ad Images",
-              "type": "array",
-              "description": "AI-generated images suitable for social media and online ads.",
               "items": {
-                "type": "string",
-                "description": "URL or base64 image"
-              }
+                "type": "string"
+              },
+              "example": ["email", "push", "websocket"]
             }
-          ]
-        }
-      ],
-      "input": [
-        {
-          "name": "Ad Generation Input Data",
-          "description": "All inputs required for AI ad image generation.",
-          "type": "object",
-          "properties": [
-            { "name": "customerProfiles", "type": "array" },
-            {
-              "name": "referenceImages",
-              "type": "array",
-              "items": { "type": "string" }
-            },
-            { "name": "reviews", "type": "array" },
-            { "name": "storeContext", "type": "object" }
           ]
         }
       ],
       "output": [
         {
-          "name": "AI Ad Images",
-          "description": "Final AI-generated ad images ready for campaigns.",
-          "type": "array",
-          "items": { "type": "string" }
+          "name": "Notification Result",
+          "description": "Delivery confirmation for each channel.",
+          "type": "object"
         }
       ]
     },
     {
-      "id": "ADVID",
-      "label": "AI Ad Video Generator",
-      "group": "adGeneration",
-      "icon": "material-symbols-light:video-camera-back-add-outline-rounded",
-      "status": "notStarted",
-      "role": "generator",
-      "description": "Generates AI-driven ad videos using customer profiles, reference images, reviews, and store context for engaging video campaigns.",
-      "type": "AI Model",
-      "functions": [
-        {
-          "name": "Ad Video Generation",
-          "description": "Creates short ad videos optimized for social media and online platforms.",
-          "input": [
-            {
-              "name": "Customer Profiles",
-              "type": "array",
-              "description": "Target audience demographics and personas."
-            },
-            {
-              "name": "Reference Images & Clips",
-              "type": "array",
-              "description": "Product or competitor images/videos to guide AI generation.",
-              "items": { "type": "string" }
-            },
-            {
-              "name": "Reviews",
-              "type": "array",
-              "description": "Customer reviews to highlight product strengths and messaging."
-            },
-            {
-              "name": "Store Context",
-              "type": "object",
-              "description": "Shop copy, product descriptions, and brand identity."
-            }
-          ],
-          "output": [
-            {
-              "name": "Generated Ad Videos",
-              "type": "array",
-              "description": "AI-generated ad videos optimized for social media and online campaigns.",
-              "items": {
-                "type": "string",
-                "description": "URL or base64 video"
-              }
-            }
-          ]
-        }
-      ],
-      "input": [
-        {
-          "name": "Ad Video Generation Input Data",
-          "description": "All inputs required for AI ad video generation.",
-          "type": "object",
-          "properties": [
-            { "name": "customerProfiles", "type": "array" },
-            {
-              "name": "referenceImages",
-              "type": "array",
-              "items": { "type": "string" }
-            },
-            { "name": "reviews", "type": "array" },
-            { "name": "storeContext", "type": "object" }
-          ]
-        }
-      ],
-      "output": [
-        {
-          "name": "AI Ad Videos",
-          "description": "Final AI-generated ad videos ready for campaigns.",
-          "type": "array",
-          "items": { "type": "string" }
-        }
-      ]
-    },
-    {
-      "id": "DBNODE",
-      "label": "Central Database (ScyllaDB?)",
-      "group": "dataPersistence",
-      "icon": "simple-icons:scylladb",
-      "status": "notStarted",
+      "id": "POSTGRES",
+      "label": "PostgreSQL Database",
+      "group": "dataLayer",
+      "icon": "simple-icons:postgresql",
+      "status": "functional",
       "role": "storage",
-      "description": "Stores all workflow outputs including product data, competitor analytics, generated copy, images, videos, and shop builds. Currently deciding if SQL, noSQL, or a combination",
-      "type": "Database",
+      "description": "Primary relational database for structured data including users, content, and relationships.",
+      "type": "SQL Database",
+      "functions": [],
+      "input": [],
+      "output": []
+    },
+    {
+      "id": "REDIS",
+      "label": "Redis Cache",
+      "group": "dataLayer",
+      "icon": "simple-icons:redis",
+      "status": "functional",
+      "role": "cache",
+      "description": "In-memory cache for session data, API responses, and frequently accessed data.",
+      "type": "Cache",
+      "functions": [],
+      "input": [],
+      "output": []
+    },
+    {
+      "id": "MONGODB",
+      "label": "MongoDB",
+      "group": "dataLayer",
+      "icon": "simple-icons:mongodb",
+      "status": "functional",
+      "role": "storage",
+      "description": "NoSQL database for unstructured data, logs, and analytics.",
+      "type": "NoSQL Database",
+      "functions": [],
+      "input": [],
+      "output": []
+    },
+    {
+      "id": "RABBITMQ",
+      "label": "RabbitMQ",
+      "group": "messageQueue",
+      "icon": "simple-icons:rabbitmq",
+      "status": "functional",
+      "role": "messageQueue",
+      "description": "Message broker for asynchronous task processing and inter-service communication.",
+      "type": "Message Queue",
+      "functions": [],
+      "input": [],
+      "output": []
+    },
+    {
+      "id": "EMAILWORKER",
+      "label": "Email Worker",
+      "group": "messageQueue",
+      "icon": "material-symbols-light:mail-outline",
+      "status": "functional",
+      "role": "worker",
+      "description": "Background worker processing email sending jobs from the queue.",
+      "type": "Worker Service",
+      "functions": [
+        {
+          "name": "Process Email Jobs",
+          "description": "Consumes email jobs from queue and sends via SMTP.",
+          "input": [
+            {
+              "name": "Email Job",
+              "type": "object"
+            }
+          ],
+          "output": [
+            {
+              "name": "Send Status",
+              "type": "object",
+              "description": "Email delivery status."
+            }
+          ]
+        }
+      ],
+      "input": [
+        {
+          "name": "Queue Message",
+          "description": "Email job from RabbitMQ.",
+          "type": "object",
+          "properties": [
+            {
+              "name": "to",
+              "type": "string"
+            },
+            {
+              "name": "subject",
+              "type": "string"
+            },
+            {
+              "name": "body",
+              "type": "string"
+            },
+            {
+              "name": "template",
+              "type": "string",
+              "optional": true
+            }
+          ]
+        }
+      ],
+      "output": [
+        {
+          "name": "Delivery Confirmation",
+          "description": "Email sent confirmation.",
+          "type": "object"
+        }
+      ]
+    },
+    {
+      "id": "IMGWORKER",
+      "label": "Image Processing Worker",
+      "group": "messageQueue",
+      "icon": "material-symbols-light:image-outline",
+      "status": "notStarted",
+      "role": "worker",
+      "description": "Background worker for image resizing, compression, and thumbnail generation.",
+      "type": "Worker Service",
+      "functions": [
+        {
+          "name": "Process Image",
+          "description": "Resizes, compresses, and generates thumbnails for uploaded images.",
+          "input": [
+            {
+              "name": "Image Job",
+              "type": "object"
+            }
+          ],
+          "output": [
+            {
+              "name": "Processed Images",
+              "type": "object",
+              "description": "URLs of processed image variants."
+            }
+          ]
+        }
+      ],
+      "input": [
+        {
+          "name": "Queue Message",
+          "description": "Image processing job from RabbitMQ.",
+          "type": "object"
+        }
+      ],
+      "output": [
+        {
+          "name": "Processing Result",
+          "description": "Processed image URLs and metadata.",
+          "type": "object"
+        }
+      ]
+    },
+    {
+      "id": "SENDGRID",
+      "label": "SendGrid Email API",
+      "group": "externalServices",
+      "icon": "simple-icons:twilio",
+      "status": "functional",
+      "role": "external",
+      "description": "Third-party email delivery service for transactional emails.",
+      "type": "External API",
+      "functions": [],
+      "input": [],
+      "output": []
+    },
+    {
+      "id": "STRIPE",
+      "label": "Stripe Payment API",
+      "group": "externalServices",
+      "icon": "simple-icons:stripe",
+      "status": "functional",
+      "role": "external",
+      "description": "Payment processing service for subscriptions and one-time purchases.",
+      "type": "External API",
+      "functions": [],
+      "input": [],
+      "output": []
+    },
+    {
+      "id": "S3",
+      "label": "AWS S3 Storage",
+      "group": "externalServices",
+      "icon": "simple-icons:amazons3",
+      "status": "functional",
+      "role": "external",
+      "description": "Cloud object storage for user uploads, media files, and backups.",
+      "type": "External Storage",
       "functions": [],
       "input": [],
       "output": []
@@ -1455,28 +903,104 @@
   ],
   "edges": [
     {
-      "from": "GHKD",
-      "to": "AMZPF",
-      "subgraph": "productIdentification",
-      "label": "Top performing product ads from GetHookd feed into Amazon product fetcher for additional data."
+      "from": "WEBAPP",
+      "to": "NGINX",
+      "label": "Web app sends HTTP requests through load balancer."
     },
     {
-      "from": "TRFVAL",
-      "to": "AIVAL",
-      "subgraph": "productValidation",
-      "label": "Competitor traffic and ad data feed into AI product viability classifier for evaluation."
+      "from": "MOBILE",
+      "to": "NGINX",
+      "label": "Mobile app sends HTTP requests through load balancer."
     },
     {
-      "from": "COMPDATA & ALBSUP & AMZREV",
-      "to": "CUSTPROF",
-      "subgraph": "productPlanning",
-      "label": "All data is used to generate customer profile"
+      "from": "NGINX",
+      "to": "APIGATE",
+      "label": "Load balancer distributes requests to API gateway instances."
     },
     {
-      "from": "IMGGEN & COPYGEN",
-      "to": "THEMEBLD",
-      "subgraph": "shopBuilding",
-      "label": "Build AI shop theme and fill it out using generated images, videos, and copy"
+      "from": "APIGATE",
+      "to": "AUTHSVC",
+      "label": "Gateway validates authentication tokens with auth service."
+    },
+    {
+      "from": "AUTHSVC",
+      "to": "POSTGRES",
+      "label": "Auth service reads/writes user credentials and sessions to PostgreSQL."
+    },
+    {
+      "from": "AUTHSVC",
+      "to": "REDIS",
+      "label": "Auth service caches session tokens in Redis for fast validation."
+    },
+    {
+      "from": "APIGATE",
+      "to": "USERSVC",
+      "label": "Authenticated user requests routed to user service."
+    },
+    {
+      "from": "APIGATE",
+      "to": "CONTENTSVC",
+      "label": "Content requests routed to content service."
+    },
+    {
+      "from": "USERSVC",
+      "to": "POSTGRES",
+      "label": "User service stores profile data in PostgreSQL."
+    },
+    {
+      "from": "USERSVC",
+      "to": "REDIS",
+      "label": "User service caches profile data in Redis."
+    },
+    {
+      "from": "CONTENTSVC",
+      "to": "POSTGRES",
+      "label": "Content service stores structured content in PostgreSQL."
+    },
+    {
+      "from": "CONTENTSVC",
+      "to": "MONGODB",
+      "label": "Content service stores unstructured metadata in MongoDB."
+    },
+    {
+      "from": "CONTENTSVC",
+      "to": "RABBITMQ",
+      "label": "Content service queues image processing and notification jobs."
+    },
+    {
+      "from": "NOTIFYSVC",
+      "to": "RABBITMQ",
+      "label": "Notification service publishes notification jobs to queue."
+    },
+    {
+      "from": "RABBITMQ",
+      "to": "EMAILWORKER",
+      "label": "Email worker consumes email jobs from queue."
+    },
+    {
+      "from": "RABBITMQ",
+      "to": "IMGWORKER",
+      "label": "Image worker consumes image processing jobs from queue."
+    },
+    {
+      "from": "EMAILWORKER",
+      "to": "SENDGRID",
+      "label": "Email worker sends emails via SendGrid API."
+    },
+    {
+      "from": "IMGWORKER",
+      "to": "S3",
+      "label": "Image worker uploads processed images to S3."
+    },
+    {
+      "from": "CONTENTSVC",
+      "to": "S3",
+      "label": "Content service stores user uploads directly to S3."
+    },
+    {
+      "from": "USERSVC",
+      "to": "STRIPE",
+      "label": "User service processes payments through Stripe API."
     }
   ]
 }
