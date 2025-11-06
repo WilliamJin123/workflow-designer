@@ -1,0 +1,102 @@
+.icon-picker-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.icon-picker-container {
+  width: 90%;
+  height: 90%;
+  background: #181818;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.icon-picker-close {
+  position: absolute;
+  top: 1vh;
+  left: 1vw;
+  z-index: 10;
+  background: #000; /* black background */
+  color: #8b2d2d; /* dull red text */
+  border: 2px solid #8b2d2d; /* dull red outline */
+  border-radius: 12px; /* more rounded */
+  padding: 5px 20px; /* wider */
+  cursor: pointer;
+  font-weight: 500;
+  letter-spacing: 1px;
+  font-size: 1rem;
+  transition: all 0.25s ease; /* smooth hover transition */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.icon-picker-close:hover {
+  background: #1a1a1a; /* slightly lighter black */
+  color: #c75a5a; /* slightly brighter dull red */
+  border-color: #c75a5a; /* match text on hover */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6); /* stronger shadow */
+  transform: scale(1.05); /* subtle pop effect */
+}
+
+.icon-picker-close:active {
+  transform: scale(0.97); /* press effect */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+.icon-picker-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.icon-picker-loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 1;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  margin: 0 auto 1.5rem;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent, #ffffff);
+  -webkit-mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 4px),
+    #fff 0
+  );
+  mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #fff 0);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.icon-picker-loader p {
+  color: #ffffff;
+  font-size: 16px;
+  margin: 0;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 640px) {
+  .icon-picker-close {
+    top: 3px;
+  }
+}
